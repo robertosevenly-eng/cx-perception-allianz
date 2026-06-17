@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Allianz Suisse — Customer Experience & Perception Dashboard</title>
+<style>
+  :root{
+    --blau:#003781;
+    --hell:#006AB3;
+    --text:#1A1A2E;
+    --bg:#f4f6fa;
+    --card:#ffffff;
+    --line:#e2e8f0;
+    --muted:#5b6573;
+    --gruen:#1f9d6b;
+    --gelbgruen:#8bc34a;
+    --gelb:#f4c430;
+    --orange:#ed8b00;
+    --rot:#d64045;
+    --shadow:0 1px 3px rgba(0,55,129,.08),0 4px 16px rgba(0,55,129,.06);
+    --shadow-hover:0 4px 12px rgba(0,55,129,.14),0 12px 32px rgba(0,55,129,.10);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text);
+    background:var(--bg);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px;}
+
+  /* HEADER */
+  header.top{
+    background:linear-gradient(135deg,var(--blau) 0%,#00214d 100%);
+    color:#fff;
+    padding:38px 0 30px;
+  }
+  header.top .wrap{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;}
+  .brand{display:flex;align-items:center;gap:14px;}
+  .logo-badge{
+    width:46px;height:46px;border-radius:8px;background:#fff;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .logo-badge svg{display:block;}
+  header.top h1{font-size:1.7rem;line-height:1.2;margin:0;font-weight:700;letter-spacing:-.3px;}
+  header.top .sub{font-size:.98rem;opacity:.92;margin-top:6px;max-width:680px;}
+  .meta-box{text-align:right;font-size:.82rem;opacity:.9;}
+  .meta-box .pill{
+    display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+    padding:5px 11px;border-radius:20px;margin-top:6px;font-size:.78rem;white-space:nowrap;
+  }
+
+  /* NAV */
+  nav.jump{
+    position:sticky;top:0;z-index:40;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);box-shadow:0 1px 4px rgba(0,0,0,.04);
+  }
+  nav.jump .wrap{display:flex;gap:4px;overflow-x:auto;padding:8px 20px;}
+  nav.jump a{
+    color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:600;
+    padding:7px 11px;border-radius:7px;white-space:nowrap;transition:.15s;
+  }
+  nav.jump a:hover{background:#eef2f8;color:var(--blau);}
+
+  section{padding:34px 0 6px;}
+  .sec-head{margin-bottom:18px;}
+  .sec-head h2{font-size:1.32rem;margin:0 0 4px;color:var(--blau);font-weight:700;letter-spacing:-.2px;}
+  .sec-head .kicker{font-size:.74rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--hell);display:block;margin-bottom:3px;}
+  .sec-head p{margin:6px 0 0;color:var(--muted);font-size:.92rem;max-width:820px;}
+
+  /* KPI TILES */
+  .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  .kpi{
+    background:var(--card);border-radius:12px;padding:16px 16px 15px;box-shadow:var(--shadow);
+    border-top:4px solid var(--hell);position:relative;transition:.18s;display:flex;flex-direction:column;
+  }
+  .kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
+  .kpi .label{font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;min-height:30px;}
+  .kpi .val{font-size:1.85rem;font-weight:800;color:var(--blau);line-height:1;margin:8px 0 5px;}
+  .kpi .val small{font-size:.95rem;font-weight:600;color:var(--muted);}
+  .kpi .note{font-size:.78rem;color:var(--muted);margin-top:auto;padding-top:6px;}
+  .kpi.warn{border-top-color:var(--rot);}
+  .kpi.warn .val{color:var(--rot);}
+  .tag{display:inline-block;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.4px;text-transform:uppercase;}
+  .tag.bias{background:#fdecec;color:var(--rot);}
+  .tag.repr{background:#e7f3ec;color:var(--gruen);}
+  .tag.dated{background:#fff3e0;color:var(--orange);}
+
+  /* GENERIC CARD */
+  .card{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:20px 22px;}
+
+  /* BENCHMARK */
+  .bench-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .bench-block h3{font-size:1rem;margin:0 0 3px;color:var(--text);}
+  .bench-block .scale{font-size:.74rem;color:var(--muted);margin:0 0 14px;}
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:.85rem;}
+  .bar-row .name{flex:0 0 92px;text-align:right;color:var(--muted);font-weight:600;font-size:.8rem;}
+  .bar-track{flex:1;background:#eef2f7;border-radius:6px;height:24px;position:relative;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:6px;background:var(--hell);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#fff;font-weight:700;font-size:.78rem;transition:width .8s cubic-bezier(.2,.8,.2,1);min-width:34px;}
+  .bar-row.is-allianz .name{color:var(--blau);font-weight:800;}
+  .bar-row.is-allianz .bar-fill{background:linear-gradient(90deg,var(--blau),var(--hell));box-shadow:0 0 0 2px rgba(0,55,129,.18) inset;}
+  .bar-fill.neg{background:var(--orange);}
+  .bar-row.is-allianz .bar-fill.neg{background:linear-gradient(90deg,#b3590a,var(--orange));}
+  .siegel{font-size:.62rem;font-weight:700;margin-left:6px;padding:1px 6px;border-radius:8px;background:rgba(255,255,255,.3);}
+
+  /* JOURNEY HEATMAP */
+  .legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:.78rem;color:var(--muted);margin-top:14px;}
+  .legend .sw{display:inline-flex;align-items:center;gap:6px;}
+  .legend .box{width:16px;height:16px;border-radius:4px;display:inline-block;}
+  .heat-scroll{overflow-x:auto;}
+  .heat{display:flex;gap:8px;min-width:760px;margin-top:4px;}
+  .heat-cell{
+    flex:1;min-width:88px;border-radius:10px;padding:12px 11px;color:#fff;position:relative;
+    box-shadow:var(--shadow);cursor:default;transition:.18s;min-height:118px;display:flex;flex-direction:column;
+  }
+  .heat-cell:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);}
+  .heat-cell .ph{font-size:.78rem;font-weight:700;line-height:1.15;}
+  .heat-cell .pp{font-size:.7rem;opacity:.95;margin-top:auto;padding-top:8px;}
+  .heat-cell .score{font-size:1.4rem;font-weight:800;margin-top:6px;}
+  .heat-cell.no-pp{background:#cdd6e2;color:#46505f;}
+  .heat-cell.no-pp .pp{opacity:.8;}
+  .mot{position:absolute;top:8px;right:8px;font-size:.58rem;font-weight:800;background:rgba(0,0,0,.28);padding:2px 6px;border-radius:8px;letter-spacing:.4px;}
+
+  /* MATRIX */
+  .matrix-wrap{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;align-items:start;}
+  .matrix-box{position:relative;background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:18px;}
+  svg.matrix{width:100%;height:auto;display:block;}
+  .pp-list{display:flex;flex-direction:column;gap:9px;}
+  .pp-item{display:flex;gap:11px;align-items:flex-start;background:var(--card);border-radius:10px;padding:11px 13px;box-shadow:var(--shadow);border-left:4px solid var(--hell);font-size:.84rem;}
+  .pp-item .pid{flex:0 0 auto;width:30px;height:30px;border-radius:8px;background:var(--blau);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.82rem;}
+  .pp-item.pos{border-left-color:var(--gruen);}
+  .pp-item.pos .pid{background:var(--gruen);}
+  .pp-item .ti{font-weight:600;line-height:1.25;}
+  .pp-item .mta{font-size:.72rem;color:var(--muted);margin-top:3px;}
+  .chip{display:inline-block;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:9px;margin-right:5px;letter-spacing:.3px;}
+  .chip.qw{background:#e7f3ec;color:var(--gruen);}
+  .chip.strat{background:#e8eefc;color:var(--blau);}
+  .chip.both{background:#fff3e0;color:var(--orange);}
+
+  /* PERCEPTION GAP */
+  .gap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .gap-card{background:var(--card);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;transition:.18s;}
+  .gap-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
+  .gap-card .gc-head{padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);}
+  .gap-card .gc-head h4{margin:0;font-size:.98rem;color:var(--blau);}
+  .ampel{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:4px 9px;border-radius:20px;}
+  .ampel .dot{width:10px;height:10px;border-radius:50%;}
+  .ampel.gross{background:#fdecec;color:var(--rot);}
+  .ampel.gross .dot{background:var(--rot);}
+  .ampel.mittelgross{background:#fff3e0;color:var(--orange);}
+  .ampel.mittelgross .dot{background:var(--orange);}
+  .gc-body{padding:14px 16px;}
+  .vr-row{display:flex;gap:10px;margin-bottom:11px;}
+  .vr-row .ic{flex:0 0 auto;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;color:#fff;}
+  .vr-row.ver .ic{background:var(--hell);}
+  .vr-row.real .ic{background:var(--rot);}
+  .vr-row .tx{font-size:.85rem;}
+  .vr-row .tx .lab{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);display:block;margin-bottom:1px;}
+  .vr-row .tx .q{font-size:.72rem;color:var(--muted);margin-top:3px;}
+
+  /* MASSNAHMEN */
+  .m-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;}
+  .m-card{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:.18s;}
+  .m-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
+  .m-card .m-top{padding:14px 16px 12px;border-bottom:1px solid var(--line);}
+  .m-card .m-id{font-size:.7rem;font-weight:800;color:var(--hell);letter-spacing:1px;}
+  .m-card h4{margin:5px 0 8px;font-size:1rem;line-height:1.25;color:var(--text);}
+  .m-badges{display:flex;flex-wrap:wrap;gap:6px;}
+  .m-card .m-body{padding:13px 16px;font-size:.83rem;color:var(--muted);flex:1;}
+  .m-card .m-body p{margin:0 0 11px;}
+  .m-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;font-size:.76rem;border-top:1px solid var(--line);padding:12px 16px;background:#fafbfd;}
+  .m-meta .mk{color:var(--muted);}
+  .m-meta b{color:var(--text);}
+  .kpi-tags{padding:0 16px 14px;background:#fafbfd;}
+  .kpi-tags .kt-lab{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:6px;}
+  .kpi-tags .kt{display:inline-block;font-size:.7rem;background:#eef2f8;color:var(--blau);font-weight:600;padding:3px 8px;border-radius:8px;margin:0 5px 5px 0;}
+  .impact-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;}
+  .imp-hoch{background:var(--gruen);}
+  .imp-mittel{background:var(--gelb);}
+
+  /* WIRKUNGSMESSUNG */
+  .wm-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .wm-flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin-top:6px;}
+  .wm-step{flex:1;min-width:150px;background:var(--card);border-radius:10px;box-shadow:var(--shadow);padding:13px 14px;position:relative;border-top:3px solid var(--hell);font-size:.82rem;}
+  .wm-step .n{font-size:.72rem;font-weight:800;color:var(--hell);}
+  .wm-step .t{margin-top:3px;color:var(--text);font-weight:600;line-height:1.3;}
+  .loop-box{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;}
+  .loop{flex:1;min-width:220px;border-radius:10px;padding:14px 16px;font-size:.84rem;}
+  .loop.inner{background:#e8eefc;border-left:4px solid var(--blau);}
+  .loop.outer{background:#e7f3ec;border-left:4px solid var(--gruen);}
+  .loop h5{margin:0 0 5px;font-size:.86rem;color:var(--blau);}
+  .loop.outer h5{color:var(--gruen);}
+  .metric-pill-row{display:flex;flex-direction:column;gap:10px;}
+  .metric-pill{background:var(--card);border-radius:10px;box-shadow:var(--shadow);padding:13px 15px;}
+  .metric-pill .mp-top{display:flex;align-items:center;gap:9px;}
+  .metric-pill .mp-tag{font-weight:800;font-size:.82rem;color:#fff;background:var(--blau);padding:3px 10px;border-radius:7px;}
+  .metric-pill .mp-tag.dach{background:var(--hell);}
+  .metric-pill .mp-def{font-size:.8rem;color:var(--muted);margin-top:7px;}
+  .metric-pill .mp-ph{font-size:.7rem;color:var(--blau);margin-top:6px;}
+  .metric-pill .mp-ph b{color:var(--muted);font-weight:700;}
+
+  /* FOOTER */
+  footer{background:#00214d;color:#cfd8e6;margin-top:40px;padding:30px 0 36px;font-size:.82rem;}
+  footer h3{color:#fff;font-size:.95rem;margin:0 0 10px;}
+  .foot-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+  footer ul{margin:0;padding-left:18px;}
+  footer li{margin-bottom:6px;line-height:1.45;}
+  .disclaimer{margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.16);font-size:.76rem;opacity:.8;line-height:1.5;}
+  .konf{display:inline-block;font-size:.66rem;font-weight:700;padding:1px 6px;border-radius:7px;margin-left:4px;}
+  .konf.h{background:rgba(31,157,107,.25);color:#9fe3c4;}
+  .konf.m{background:rgba(244,196,48,.22);color:#f6dd8c;}
+  .konf.n{background:rgba(214,64,69,.25);color:#f3a9ac;}
+
+  /* TOOLTIP */
+  .tt{position:relative;}
+  .tt[data-tip]:hover::after{
+    content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+    background:#00214d;color:#fff;padding:8px 11px;border-radius:8px;font-size:.74rem;font-weight:500;
+    width:max-content;max-width:240px;line-height:1.35;z-index:60;box-shadow:0 6px 20px rgba(0,0,0,.25);
+    white-space:normal;text-align:left;text-transform:none;letter-spacing:0;
+  }
+  .tt[data-tip]:hover::before{
+    content:"";position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);
+    border:6px solid transparent;border-top-color:#00214d;z-index:60;
+  }
+
+  @media(max-width:980px){
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .matrix-wrap{grid-template-columns:1fr;}
+    .wm-grid{grid-template-columns:1fr;}
+  }
+  @media(max-width:680px){
+    .bench-grid,.gap-grid{grid-template-columns:1fr;}
+    header.top .wrap{flex-direction:column;align-items:flex-start;}
+    .meta-box{text-align:left;}
+    header.top h1{font-size:1.35rem;}
+    .kpi-grid{grid-template-columns:1fr 1fr;}
+    .foot-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="top">
+  <div class="wrap">
+    <div>
+      <div class="brand">
+        <span class="logo-badge">
+          <svg width="30" height="20" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="3.4" height="16" fill="#003781"/>
+            <rect x="13.3" y="2" width="3.4" height="16" fill="#003781"/>
+            <rect x="24.6" y="2" width="3.4" height="16" fill="#003781"/>
+            <polygon points="9,18 15,2 21,18" fill="none" stroke="#003781" stroke-width="3.2"/>
+          </svg>
+        </span>
+        <h1>Allianz Suisse — Customer Experience &amp; Perception Dashboard</h1>
+      </div>
+      <p class="sub">Voice-of-Customer- &amp; Perception-Gap-Analyse: Wo die Kundenwahrnehmung das Markenversprechen verfehlt — und wie sich die Lücke messbar schliessen lässt.</p>
+    </div>
+    <div class="meta-box">
+      <div>Stand: <strong id="d-date">16.06.2026</strong></div>
+      <div class="pill">Basis: ausschliesslich öffentliche Quellen</div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ NAV ============ -->
+<nav class="jump">
+  <div class="wrap">
+    <a href="#kpi">KPI-Überblick</a>
+    <a href="#benchmark">Wettbewerb</a>
+    <a href="#journey">Customer Journey</a>
+    <a href="#matrix">Pain-Point-Matrix</a>
+    <a href="#gap">Perception Gap</a>
+    <a href="#massnahmen">Handlungsempfehlungen</a>
+    <a href="#wirkung">Wirkungsmessung</a>
+    <a href="#quellen">Quellen &amp; Lücken</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ============ 1+2 KPI TILES ============ -->
+  <section id="kpi">
+    <div class="sec-head">
+      <span class="kicker">Auf einen Blick</span>
+      <h2>Kennzahlen-Überblick</h2>
+      <p>Fünf öffentlich belegte Signale. Wichtig: Befragungen (repräsentativ) und unaufgeforderte Beschwerdekanäle (selbstselektiv, negativ verzerrt) werden bewusst getrennt — ein Qualitätsmerkmal der Analyse.</p>
+    </div>
+    <div class="kpi-grid" id="kpi-grid"></div>
+  </section>
+
+  <!-- ============ 3 BENCHMARK ============ -->
+  <section id="benchmark">
+    <div class="sec-head">
+      <span class="kicker">Repräsentative Befragungen</span>
+      <h2>Wettbewerbs-Benchmark</h2>
+      <p>Das faire Bild: Allianz ist solide, liegt aber in jeder Disziplin hinter Marktführer Mobiliar — und meist im Mittelfeld bis hinteren Feld. Der Allianz-Balken ist hervorgehoben.</p>
+    </div>
+    <div class="card">
+      <div class="bench-grid" id="bench-grid"></div>
+      <div class="legend">
+        <span class="sw"><span class="box" style="background:linear-gradient(90deg,var(--blau),var(--hell));"></span> Allianz</span>
+        <span class="sw"><span class="box" style="background:var(--hell);"></span> Wettbewerb (Zufriedenheit)</span>
+        <span class="sw"><span class="box" style="background:var(--orange);"></span> NPS-Skala (−100 … +100)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4 JOURNEY HEATMAP ============ -->
+  <section id="journey">
+    <div class="sec-head">
+      <span class="kicker">Schmerz entlang der Reise</span>
+      <h2>Customer-Journey-Heatmap</h2>
+      <p>Jede Phase ist nach Pain-Point-Schwere eingefärbt (Frequenz × Impact). Die beiden „Moment of Truth“-Phasen — Schadenfall und laufender Service — sind markiert: Genau dort konzentriert sich der grösste Schmerz.</p>
+    </div>
+    <div class="card">
+      <div class="heat-scroll"><div class="heat" id="heat"></div></div>
+      <div class="legend">
+        <span class="sw"><span class="box" style="background:var(--gruen);"></span> kein/geringer Schmerz</span>
+        <span class="sw"><span class="box" style="background:var(--gelb);"></span> moderat</span>
+        <span class="sw"><span class="box" style="background:var(--orange);"></span> hoch</span>
+        <span class="sw"><span class="box" style="background:var(--rot);"></span> kritisch</span>
+        <span class="sw" style="margin-left:8px;"><span style="font-size:.58rem;font-weight:800;background:#00214d;color:#fff;padding:2px 6px;border-radius:8px;">MOMENT OF TRUTH</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5 PAIN-POINT MATRIX ============ -->
+  <section id="matrix">
+    <div class="sec-head">
+      <span class="kicker">Priorisierung</span>
+      <h2>Pain-Point-Matrix — Impact × Frequenz</h2>
+      <p>Score = Frequenz × Impact. Oben rechts liegt das belastbarste Handlungssignal. Quick Wins (geringer Aufwand) lassen sich sofort angehen, strategische Themen brauchen länger. Pain Points, die in <em>beiden</em> Wahrnehmungs-Ebenen auftauchen, sind besonders belastbar.</p>
+    </div>
+    <div class="matrix-wrap">
+      <div class="matrix-box">
+        <svg class="matrix" id="matrix-svg" viewBox="0 0 560 440" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="pp-list" id="pp-list"></div>
+    </div>
+  </section>
+
+  <!-- ============ 6 PERCEPTION GAP ============ -->
+  <section id="gap">
+    <div class="sec-head">
+      <span class="kicker">Versprechen ↔ Realität</span>
+      <h2>Perception Gap</h2>
+      <p>Je Thema steht das öffentliche Markenversprechen der wahrgenommenen Realität gegenüber. Die Ampel zeigt die Grösse der Lücke.</p>
+    </div>
+    <div class="gap-grid" id="gap-grid"></div>
+  </section>
+
+  <!-- ============ 7 HANDLUNGSEMPFEHLUNGEN ============ -->
+  <section id="massnahmen">
+    <div class="sec-head">
+      <span class="kicker">Vom Befund zur Wirkung</span>
+      <h2>Handlungsempfehlungen</h2>
+      <p>Fünf Massnahmen, je an einen Pain Point gekoppelt — mit Typ (Quick Win / Strategisch), erwartetem Impact, messbaren KPIs und Zeithorizont.</p>
+    </div>
+    <div class="m-grid" id="m-grid"></div>
+  </section>
+
+  <!-- ============ 8 WIRKUNGSMESSUNG ============ -->
+  <section id="wirkung">
+    <div class="sec-head">
+      <span class="kicker">Wie der Erfolg gemessen wird</span>
+      <h2>Wirkungsmessung &amp; Framework</h2>
+      <p>Eine Dachmetrik (NPS, Anschluss an das Konzernziel „Loyalty Leader“), transaktionale Touchpoint-Metriken (CSAT/CES), ein Closed Loop und eine saubere 5-Schritt-Wirkungslogik.</p>
+    </div>
+    <div class="wm-grid">
+      <div class="card">
+        <h3 style="margin:0 0 4px;font-size:1rem;color:var(--blau);">Metrik-Architektur</h3>
+        <p style="margin:0 0 14px;font-size:.82rem;color:var(--muted);">Dachmetrik relational, Touchpoint-Metriken transaktional.</p>
+        <div class="metric-pill-row" id="metric-pills"></div>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 4px;font-size:1rem;color:var(--blau);">Closed Loop</h3>
+        <p style="margin:0 0 8px;font-size:.82rem;color:var(--muted);">Negatives Feedback wird systematisch zurückgespielt — operativ und systemisch.</p>
+        <div class="loop-box" id="loop-box"></div>
+        <h3 style="margin:18px 0 8px;font-size:1rem;color:var(--blau);">Priorisierungsmethode</h3>
+        <p style="margin:0;font-size:.82rem;color:var(--muted);" id="prio-method"></p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <h3 style="margin:0 0 4px;font-size:1rem;color:var(--blau);">5-Schritt-Wirkungslogik</h3>
+      <p style="margin:0 0 6px;font-size:.82rem;color:var(--muted);">Sauberer Wirkungsnachweis statt Punktmessung — Effekte werden isoliert und mit Geschäfts-KPIs verknüpft.</p>
+      <div class="wm-flow" id="wm-flow"></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============ 9 FOOTER ============ -->
+<footer id="quellen">
+  <div class="wrap">
+    <h3>Quellen-, Konfidenz- &amp; Datenlücken-Hinweis</h3>
+    <div class="foot-grid">
+      <div>
+        <strong style="color:#fff;font-size:.85rem;">Verwendete öffentliche Quellen &amp; Konfidenz</strong>
+        <ul id="src-list" style="margin-top:10px;"></ul>
+      </div>
+      <div>
+        <strong style="color:#fff;font-size:.85rem;">Bekannte Datenlücken</strong>
+        <ul id="gap-list" style="margin-top:10px;"></ul>
+      </div>
+    </div>
+    <div class="disclaimer" id="disclaimer"></div>
+  </div>
+</footer>
+
+<script>
+/* ===================== EINGEBETTETE DATENBASIS (Single Source of Truth) ===================== */
+const DATA = {
+  "meta": {
+    "titel": "Voice-of-Customer & Perception-Gap-Analyse — Allianz Suisse",
+    "zweck": "Datenbasis für Bewerbungs-Portfolio (Customer Experience Perception Manager)",
+    "stand": "2026-06-16",
+    "datenart": "Ausschliesslich öffentlich zugängliche Quellen. Keine internen Allianz-Daten.",
+    "wichtigster_methodenhinweis": "Zwei klar getrennte Wahrnehmungs-Ebenen: (A) REPRÄSENTATIVE Befragungen (comparis, bonus.ch, checkall, moneyland, Branchenmonitor, Bain) zeichnen ein faires Bild: Allianz solide, aber durchgehend hinter Marktführer Mobiliar. (B) UNAUFGEFORDERTE Beschwerdekanäle (Trustpilot, Foren) sind selbstselektiv und stark negativ verzerrt — NICHT repräsentativ, aber wertvoll, weil sie zeigen, WO es weh tut. Pain Points, die in BEIDEN Ebenen auftauchen, sind das belastbare Handlungssignal."
+  },
+  "kennzahlen": [
+    {"quelle":"Trustpilot (allianz.ch)","metrik":"TrustScore","wert":"1.5 / 5","stichprobe":"~239 Reviews","skala":"1–5","jahr":"2026","ebene":"unaufgefordert (verzerrt)","konfidenz":"hoch für 1.5 & 239; mittel für Verteilung (~86% 1-Stern, ~11% 5-Stern)","caveat":"Selbstselektiert, stark negativ verzerrt — NICHT repräsentativ für die Gesamtkundenbasis. Allianz Deutschland (allianz.de) liegt auf Trustpilot deutlich höher (~4.6) — Ländervergleich nur mit allianz.ch.","url":"https://www.trustpilot.com/review/allianz.ch"},
+    {"quelle":"comparis.ch Kundenzufriedenheit 2025 (Innofact, ~4'500 Befragte)","metrik":"Zufriedenheitsnote / Siegel","wert":"Auto 5.1 (Silber), Hausrat/Haftpflicht 5.1 (Silber)","skala":"1–6 (Silber 5.0–5.1, Gold 5.2–5.4, Platin ab 5.5)","jahr":"2025","ebene":"repräsentativ","konfidenz":"hoch für Hausrat 5.1; mittel für Auto (als ‚leicht unter 5.2-Gruppe‘ belegt, exakter Auto-Wert abgeleitet)","caveat":"Mobiliar 5.3 Gold in beiden Sparten; Vaudoise/Smile 5.2 Gold (Auto). Allianz gleichauf mit AXA/Helvetia (Hausrat). Kein Fortschritt 2024→2025 (konstant Silber).","url":"https://www.watson.ch/schweiz/auto/753195428-ranking-so-zufrieden-sind-schweizer-mit-ihren-versicherungen"},
+    {"quelle":"bonus.ch Zufriedenheitsumfrage 2026","metrik":"Note Kundenzufriedenheit","wert":"Auto 5.2 (Platz 5/11, = Branchenschnitt), Hausrat/Haftpflicht 5.1 (LETZTER, 11/11)","skala":"1–6","jahr":"2026","ebene":"repräsentativ","konfidenz":"hoch (Original-PDF); separat gegenzuprüfen vor finaler Nutzung","caveat":"Hausrat 5.1 = schlechtester Wert aller 11 Anbieter, 0.2 unter Schnitt (5.3). Niedrigste Weiterempfehlungsrate: 84% vs. Mobiliar 96%. Mobiliar 5.5 (sehr gut) in beiden Sparten.","url":"https://www.bonus.ch/Pdf/2026/Hausratversicherung.pdf"},
+    {"quelle":"checkall.ch Branchenumfrage (>5'400 Teilnehmende)","metrik":"Gesamtnote Kundenzufriedenheit","wert":"4.2 (‚gut‘)","skala":"1–5","jahr":"2024","ebene":"repräsentativ","konfidenz":"hoch","caveat":"Achtung: dieselbe Seite führt PARALLEL eine plattformeigene Sterne-Note 3.7/5 (148 Reviews) — nicht mit der Umfragenote 4.2 vermischen.","url":"https://www.checkall.ch/de/versicherung/versicherungsunternehmen/allianz"},
+    {"quelle":"checkall.ch Dimensionsnoten Allianz","metrik":"Dimensionsnoten","wert":"Information/Kommunikation/Transparenz 4.3 · Service 4.1 · Preis-Leistung 4.0 · Kontaktbequemlichkeit 4.3","skala":"1–5","jahr":"2024","ebene":"repräsentativ","konfidenz":"hoch","caveat":"Preis-Leistung (4.0) ist die schwächste Dimension — deckt sich mit bonus.ch (Preis-Leistung letzter Platz).","url":"https://www.checkall.ch/de/versicherung/versicherungsunternehmen/allianz"},
+    {"quelle":"Schweizer Branchenmonitor 2025 (SIQT / qualitaetstest.ch)","metrik":"Kundenzufriedenheit (0–10)","wert":"Allianz NICHT in Top 5 (keiner Kernsparte)","skala":"0–10","jahr":"2025","ebene":"repräsentativ","konfidenz":"hoch","caveat":"Mobiliar führt: Auto 7.79, Hausrat/Haftpflicht 8.15. Allianz nur unter ‚weitere Unternehmen‘ ohne ausgewiesenen Score.","url":"https://www.qualitaetstest.ch/awards/schweizer-branchenmonitor/schweizer-branchenmonitor-2025-geld-banken-versicherungen/"},
+    {"quelle":"Bain & Company / HZ Insurance — NPS Schweiz","metrik":"Net Promoter Score","wert":"Allianz +8 · Mobiliar +45 · Branchenschnitt ~+18","skala":"-100 bis +100","jahr":"2017–2019 (Datenstand)","ebene":"repräsentativ","konfidenz":"hoch für Werte; Aktualität niedrig — als Stand 2017–2019 kennzeichnen","caveat":"~37 NPS-Punkte Rückstand auf Mobiliar; Allianz unter Branchenschnitt. Richtung (Mobiliar führt) in neueren Bain-Berichten bestätigt, aktuelle bezifferte Allianz-Werte nicht öffentlich.","url":"https://www.hzinsurance.ch/insurance/kundenmanagement-net-promoter-score-die-assekuranz-holt-auf"},
+    {"quelle":"moneyland.ch / Ipsos Zufriedenheitsumfrage 2025 (~1'500 Befragte)","metrik":"Kundenzufriedenheit gesamt (0–10)","wert":"Allianz nicht in publizierten Top-Rängen","skala":"0–10","jahr":"2025","ebene":"repräsentativ","konfidenz":"mittel (Seite blockt Direktabruf)","caveat":"Spitze: Mobiliar/Smile/TCS je 8.2. 2024 hatte Allianz bei Auto noch 8.0 (Blick) — hinteres Mittelfeld.","url":"https://www.moneyland.ch/en/swiss-insurance-customer-satisfaction-survey-2025"}
+  ],
+  "benchmark_zufriedenheit": {
+    "skala":"comparis/bonus 1–6",
+    "hinweis":"Auto- und Hausrat-Zufriedenheitsnoten, Allianz vs. Wettbewerb (comparis 2025 / bonus.ch 2026).",
+    "auto_comparis_2025":[
+      {"anbieter":"Mobiliar","note":5.3,"siegel":"Gold"},
+      {"anbieter":"Vaudoise","note":5.2,"siegel":"Gold"},
+      {"anbieter":"Smile","note":5.2,"siegel":"Gold"},
+      {"anbieter":"Zurich","note":5.1,"siegel":"Silber"},
+      {"anbieter":"Allianz","note":5.1,"siegel":"Silber"},
+      {"anbieter":"AXA","note":5.1,"siegel":"Silber"}
+    ],
+    "hausrat_bonus_2026":[
+      {"anbieter":"Mobiliar","note":5.5},
+      {"anbieter":"Vaudoise","note":5.4},
+      {"anbieter":"Helvetia","note":5.3},
+      {"anbieter":"AXA","note":5.2},
+      {"anbieter":"Zurich","note":5.2},
+      {"anbieter":"Generali","note":5.2},
+      {"anbieter":"Smile","note":5.2},
+      {"anbieter":"Allianz","note":5.1}
+    ],
+    "nps_bain_2019":[
+      {"anbieter":"Mobiliar","nps":45},
+      {"anbieter":"Branchenschnitt","nps":18},
+      {"anbieter":"Allianz","nps":8}
+    ],
+    "weiterempfehlung_bonus_2026":[
+      {"anbieter":"Mobiliar","wert":96},
+      {"anbieter":"Allianz","wert":84}
+    ]
+  },
+  "journey_phasen":[
+    {"phase":"Awareness/Information","moment":false},
+    {"phase":"Offerte/Beratung","moment":false},
+    {"phase":"Abschluss","moment":false},
+    {"phase":"Onboarding/Police","moment":false},
+    {"phase":"Laufender Service/Vertragsänderung","moment":true},
+    {"phase":"Schadenfall","moment":true},
+    {"phase":"Prämien/Rechnung","moment":false},
+    {"phase":"Verlängerung/Kündigung","moment":false},
+    {"phase":"Digital/App","moment":false}
+  ],
+  "pain_points":[
+    {"id":"P1","titel":"Schadenfall: Verzögerung, fragwürdige Ablehnungen, verspätete Auszahlung","phase":"Schadenfall","frequenz":5,"impact":5,"aufwand":4,"prioritaet":25,"typ":"Strategisch + Prozess","sentiment":"negativ","in_beiden_ebenen":true,"verletztes_versprechen":"‚Im Schadenfall für Sie da. 7 Tage. 24 Stunden.‘ / ‚Ihr Sicherheitsnetz‘","belege":["Trustpilot","checkall.ch","bonus.ch (Dimension Schaden)"],"zitate":["2 Monate nach dem Unfall mit Vollkasko und 6 Wochen nach Unterschrift habe ich noch immer kein Geld für mein Totalschaden-Auto gesehen.","Der Sachbearbeiter hat nicht zugehört und immer wieder gesagt, dass die Allianz nicht zahle.","Warte seit deutlich über 1 Monat auf die Auszahlung."]},
+    {"id":"P2","titel":"Erreichbarkeit & Reaktionszeit: Hotline, E-Mail, Rückrufe","phase":"Laufender Service/Vertragsänderung","frequenz":5,"impact":4,"aufwand":3,"prioritaet":20,"typ":"Quick-Win-Potenzial","sentiment":"negativ","in_beiden_ebenen":true,"verletztes_versprechen":"‚zuverlässige Partnerin‘ / ‚Sicherheitsnetz‘","belege":["Trustpilot","checkall.ch"],"zitate":["Endlose Telefonwarteschlange, immer wieder leere Versprechungen.","Egal wie man die Versicherung kontaktiert, wird nicht oder nur nach sehr langer Wartefrist reagiert.","Stundenlang in der Warteschlaufe wenn man etwas benötigt."]},
+    {"id":"P3","titel":"Preis-Leistung & Prämienerhöhungen: als unverhältnismässig empfunden","phase":"Prämien/Rechnung","frequenz":4,"impact":4,"aufwand":2,"prioritaet":16,"typ":"Quick Win (Kommunikation)","sentiment":"negativ","in_beiden_ebenen":true,"verletztes_versprechen":"‚echte Mehrwerte für unsere Kundinnen und Kunden‘","belege":["checkall.ch (Preis-Leistung 4.0, schwächste Dimension)","bonus.ch (Preis-Leistung letzter Platz)","Trustpilot"],"zitate":["Der Kundendienst erklärte, dass 10% Prämienerhöhung normal seien — bei einer Inflation von nur 2,1%.","Prämienerhöhung von 13% bei einer Inflation von nicht einmal 2%.","Preiserhöhung trotz jahrelanger Schadenfreiheit."]},
+    {"id":"P4","titel":"Digitale Einfachheit: keine dedizierte CH-App, schwaches Self-Service-Portal","phase":"Digital/App","frequenz":3,"impact":4,"aufwand":5,"prioritaet":12,"typ":"Strategisch","sentiment":"negativ","in_beiden_ebenen":true,"verletztes_versprechen":"‚einfache Lösungen‘ / Konzern-Strategie ‚Simplicity wins‘","belege":["App-Store-Recherche (keine bewertete Allianz-Suisse-App auffindbar; Mobiliar hat ‚Meine Mobiliar‘)","Trustpilot"],"zitate":["Digitalisierung bei der Allianz leider absolut ungenügend.","Dieser Online-Kundenservice verdient seinen Namen nicht.","Es wird gedruckt und per Post verschickt wie im Mittelalter."]},
+    {"id":"P5","titel":"Beratung/Offerte: Überversprechen & Verkaufsdruck beim Abschluss","phase":"Offerte/Beratung","frequenz":3,"impact":3,"aufwand":3,"prioritaet":9,"typ":"Mittel","sentiment":"negativ","in_beiden_ebenen":false,"verletztes_versprechen":"‚bedarfsgerechte, ehrliche Beratung‘ / Vertrauen","belege":["Trustpilot (Allianz räumte Beschwerden über einen Berater ein)"],"zitate":["Der Berater hat versprochen, dass gewisse Dinge gedeckt seien — reine Lügen, nur damit er den Vertrag abschliessen konnte.","Der Berater meldet sich nur, wenn ein Vertrag ausläuft oder er mehr Provision will."]},
+    {"id":"P6","titel":"Vertragsausstieg & Retention: Kündigungen ignoriert, Nachforderungen, Inkasso ohne Vorkontakt","phase":"Verlängerung/Kündigung","frequenz":3,"impact":3,"aufwand":2,"prioritaet":9,"typ":"Quick Win (Prozess)","sentiment":"negativ","in_beiden_ebenen":false,"verletztes_versprechen":"‚zuverlässige Partnerin‘","belege":["Trustpilot","checkall.ch"],"zitate":["Ich versuche seit Wochen meinen Vertrag zu kündigen … werde aber geflissentlich ignoriert.","Nach einem Umzug stornierte Allianz die Versicherung ohne Vorkontakt und verfolgte mich über das Betreibungsamt."]},
+    {"id":"POS1","titel":"Positiver Gegenpol: kompetente persönliche Beratung & einzelne reibungslose Schadenfälle","phase":"Offerte/Beratung","frequenz":2,"impact":3,"aufwand":1,"prioritaet":6,"typ":"Stärke ausbauen","sentiment":"positiv","in_beiden_ebenen":true,"verletztes_versprechen":"—","belege":["checkall.ch (5-Sterne)","Trustpilot (5-Sterne, langjährige Kunden)"],"zitate":["Das Personal der Schadensabteilung ist sehr freundlich und hilfsbereit.","In 20 Jahren war Allianz immer da, rasch, unkompliziert und einwandfrei.","Sehr gute Beratung, besonders bei der Lebensversicherung."]}
+  ],
+  "perception_gap":[
+    {"thema":"Schadenfall / Moment of Truth","versprechen":"‚Im Schadenfall für Sie da. 7 Tage. 24 Stunden.‘","versprechen_quelle":"allianz.ch/de/privatkunden/services/.../schaden-melden.html","realitaet":"Häufigstes Beschwerdethema: verzögerte/abgelehnte Schäden, ausbleibende Auszahlung, fehlende Empathie.","realitaet_quelle":"Trustpilot, checkall.ch","gap":"gross"},
+    {"thema":"Erreichbarkeit / Verlässlichkeit","versprechen":"‚Ihr Sicherheitsnetz‘, ‚zuverlässige Partnerin‘","versprechen_quelle":"allianz.ch/de/ueber-uns.html","realitaet":"Lange Warteschlangen, unbeantwortete Mails, nicht eingehaltene Rückrufversprechen.","realitaet_quelle":"Trustpilot, checkall.ch","gap":"gross"},
+    {"thema":"Einfachheit / Digitalisierung","versprechen":"‚einfache Lösungen und echte Mehrwerte‘; Konzern: ‚Simplicity wins‘","versprechen_quelle":"allianz.ch/de/ueber-uns.html; allianz.com Capital Markets Day 2024","realitaet":"Keine bewertete dedizierte CH-App auffindbar (Mobiliar hat eine); ‚per Post wie im Mittelalter‘.","realitaet_quelle":"App-Store-Recherche, Trustpilot","gap":"gross"},
+    {"thema":"Preis-Leistung / Mehrwert","versprechen":"‚echte Mehrwerte für unsere Kundinnen und Kunden‘","versprechen_quelle":"allianz.ch/de/ueber-uns.html","realitaet":"Preis-Leistung ist die plattformübergreifend schwächste Dimension (checkall 4.0; bonus letzter Platz).","realitaet_quelle":"checkall.ch, bonus.ch","gap":"mittel-gross"},
+    {"thema":"Kundenloyalität / NPS-Anspruch","versprechen":"Ziel ‚NPS Loyalty Leader‘ (75 %+ bis 2027); ausgezeichnet als ‚Best Customer-Centric Culture‘ 2024","versprechen_quelle":"allianz.com Strategie; InMoment CX Awards 2024","realitaet":"NPS +8 vs. Mobiliar +45 (~37 Punkte Rückstand, Stand 2017–2019); bonus.ch Weiterempfehlung 84% vs. 96%.","realitaet_quelle":"Bain/HZ Insurance; bonus.ch 2026","gap":"gross"}
+  ],
+  "handlungsempfehlungen":[
+    {"id":"M1","pain_point":"P1","titel":"Schaden-Versprechen einlösen: proaktive Status-Kommunikation & Closed Loop","beschreibung":"Automatische Status-Updates im Schadenprozess, Schaden-Tracking im Portal, verbindliche Erst-Rückmeldung <48h, Empathie-/Eskalationsstandard bei Ablehnungen, Inner-Loop-Rückruf für jeden Schaden-Detraktor.","typ":"Strategisch (mit Quick-Win-Anteil Kommunikation)","aufwand":"hoch","erwarteter_impact":"hoch","kpi":["Schaden-CSAT","Schaden-NPS","Ø Bearbeitungsdauer","% Erstrückmeldung <48h"],"baseline":"intern zu erheben (Proxy öffentlich: bonus.ch Schaden-Dimension 5.2)","zielwert":"Schaden-CSAT +X Pkt. in 12 Monaten; 95% Erstrückmeldung <48h","horizont":"0–12 Monate"},
+    {"id":"M2","pain_point":"P2","titel":"Erreichbarkeit spürbar verbessern (Callback, SLA, KI-Triage)","beschreibung":"Callback-Funktion statt Warteschleife, transparente Service-Level, E-Mail-Antwort-SLA (2 Arbeitstage), KI-gestützte Triage/Self-Service für Standardanliegen zur Entlastung der Hotline.","typ":"Quick Win","aufwand":"mittel","erwarteter_impact":"hoch","kpi":["CES Service","Ø Wartezeit Telefon","Erreichbarkeitsquote","E-Mail-Antwortzeit"],"baseline":"intern zu erheben","zielwert":"Ø Wartezeit −30%; E-Mail-SLA 90% in 2 AT","horizont":"0–6 Monate"},
+    {"id":"M3","pain_point":"P3","titel":"Prämienanpassungen proaktiv & verständlich erklären (Value statt Preis)","beschreibung":"Verständliche, frühzeitige Kommunikation jeder Prämienanpassung (Warum + konkreter Mehrwert), Anerkennung von Schadenfreiheit/Loyalität, ‚Value Story‘ pro Vertrag.","typ":"Quick Win","aufwand":"niedrig-mittel","erwarteter_impact":"mittel-hoch","kpi":["CSAT nach Prämienkommunikation","Dimension Preis-Leistung (checkall/bonus)","Churn nach Prämienanpassung"],"baseline":"checkall Preis-Leistung 4.0; bonus Preis-Leistung letzter Platz","zielwert":"Preis-Leistung-Dimension +0.2; Churn nach Anpassung −X%","horizont":"0–9 Monate"},
+    {"id":"M4","pain_point":"P4","titel":"‚Simplicity wins‘ lokal einlösen: dedizierte CH-App & Portal-Ausbau","beschreibung":"Eigene Schweizer my.Allianz App / Portal-Ausbau mit Schaden melden + tracken und Self-Service-Vertragsänderungen — schliesst die digitale Lücke zu Mobiliar.","typ":"Strategisch","aufwand":"hoch","erwarteter_impact":"hoch (strategisch)","kpi":["App-/Portal-Adoption","CES Digital","Self-Service-Quote","App-Store-Rating CH"],"baseline":"keine bewertete CH-App vorhanden (Datenlücke)","zielwert":"CH-App live; Self-Service-Quote +X%; App-Rating ≥4.0","horizont":"6–18 Monate"},
+    {"id":"M5","pain_point":"P5","titel":"Beratungsqualität & Transparenz: Mis-Selling reduzieren","beschreibung":"Bedarfsgerechte, ehrliche Beratung mit klarer Deckungs-Transparenz, Qualitäts-/Ehrlichkeitsstandards im Aussendienst, Feedback-Schleife nach Beratung.","typ":"Mittel","aufwand":"mittel","erwarteter_impact":"mittel","kpi":["CSAT Beratung/Onboarding","Beschwerdequote Beratung","Frühstorno-Quote"],"baseline":"intern zu erheben","zielwert":"Frühstorno −X%; Beratungs-CSAT +X Pkt.","horizont":"3–12 Monate"}
+  ],
+  "wirkungsmessung":{
+    "dachmetrik":"NPS (relational, periodisch) — Anschluss an Konzernziel ‚Loyalty Leader‘",
+    "touchpoint_metriken":[
+      {"metrik":"CSAT","definition":"Zufriedenheit mit konkreter Interaktion (Top-2-Box, Skala 1–5)","phasen":["Beratung","Abschluss","Onboarding","Schadenfall"]},
+      {"metrik":"CES","definition":"Mühelosigkeit (‚leicht gemacht‘, Skala 1–7; Gut ≥5.5)","phasen":["Laufender Service","Vertragsänderung","Schadenmeldung","Digital/App"]}
+    ],
+    "closed_loop":{
+      "inner_loop":"1:1-Rückkontakt bei negativem Feedback <48h (v.a. Schaden/Service) — Problem lösen, Churn verhindern.",
+      "outer_loop":"Aggregierte Mustererkennung → systemische Prozess-/Produktverbesserungen."
+    },
+    "wirkungslogik":[
+      "1. Baseline der Zielmetrik vor Massnahme erheben",
+      "2. Konkreten Zielwert + Zeithorizont definieren",
+      "3. Kontrollgruppe / Difference-in-Differences zur Effekt-Isolierung",
+      "4. Zeitreihe statt Punktmessung (Saisonalität)",
+      "5. Verknüpfung mit Geschäfts-KPIs: Retention/Churn, Schadenkosten, Cost-to-Serve"
+    ],
+    "priorisierungsmethode":"Pain-Point-Score = Frequenz × Impact (Heatmap), Effort separat für Quick-Win-/Strategisch-Sequenzierung (ergänzend RICE)."
+  },
+  "markenversprechen":[
+    {"claim":"Let's care for tomorrow.","thema":"Übergreifendes Versprechen / Sicherheit & Zukunft","quelle":"allianz.ch/de/karriere/.../care-for-tomorrow.html"},
+    {"claim":"Wir sind Ihr Sicherheitsnetz.","thema":"Sicherheit & Vertrauen","quelle":"allianz.ch/de/ueber-uns.html"},
+    {"claim":"Einfache Lösungen und echte Mehrwerte für unsere Kundinnen und Kunden.","thema":"Einfachheit & Mehrwert","quelle":"allianz.ch/de/ueber-uns.html"},
+    {"claim":"Im Schadenfall für Sie da. 7 Tage. 24 Stunden.","thema":"Erreichbarkeit im Schadenfall","quelle":"allianz.ch/.../schaden-melden.html"},
+    {"claim":"Konsequente Kundenorientierung · Simplicity wins · Ziel NPS Loyalty Leader 75 %+ (2027).","thema":"Strategie / messbare Loyalität","quelle":"allianz.com Strategie & Capital Markets Day 2024"},
+    {"claim":"Best Customer-Centric Culture — CX Insurance Awards 2024.","thema":"Externe CX-Auszeichnung","quelle":"inmoment.com (2024)"}
+  ],
+  "datenluecken":[
+    "Keine bewertete dedizierte Allianz-Suisse-Endkunden-App im CH-App-Store/Play auffindbar (historische ‚myAllianz‘ seit 2019 depubliziert) — eigenständiger Befund (Wettbewerber Mobiliar hat eine).",
+    "Reddit/comparis-Forum/X für den Crawler nicht zugänglich — ungefiltertes Social-Feedback unvollständig.",
+    "Interne NPS/CSAT/CES-Werte nicht öffentlich — öffentliche Befragungen dienen als Proxy/Hypothese, intern zu validieren.",
+    "Bain-NPS-Einzelwerte stammen aus 2017–2019; bonus.ch-2026- und moneyland-2025-Werte vor finaler Präsentationsnutzung separat gegenprüfen."
+  ]
+};
+
+/* ===================== HILFSFUNKTIONEN ===================== */
+const $ = (s)=>document.querySelector(s);
+const esc = (s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* Datum DE-CH */
+(function(){
+  const [y,m,d]=DATA.meta.stand.split('-');
+  $('#d-date').textContent = `${d}.${m}.${y}`;
+})();
+
+/* ===================== 1+2 KPI-TILES ===================== */
+(function(){
+  const tiles = [
+    {label:"Trustpilot TrustScore", val:"1.5", unit:"/5", note:"~239 Reviews · selbstselektiv & negativ verzerrt", tag:'<span class="tag bias">nicht repräsentativ</span>', warn:true,
+     tip:"Unaufgeforderter Beschwerdekanal: ~86% 1-Stern. Zeigt, WO es weh tut — kein Abbild der Gesamtkundenbasis."},
+    {label:"comparis 2025 — Auto & Hausrat", val:"5.1", unit:"Silber", note:"Mobiliar 5.3 Gold · kein Fortschritt 2024→2025", tag:'<span class="tag repr">repräsentativ</span>',
+     tip:"Skala 1–6. Silber 5.0–5.1, Gold 5.2–5.4. Allianz gleichauf mit AXA/Helvetia, hinter Mobiliar."},
+    {label:"bonus.ch 2026 — Hausrat", val:"11/11", unit:"", note:"Note 5.1 = letzter Platz, 0.2 unter Schnitt (5.3)", tag:'<span class="tag repr">repräsentativ</span>', warn:true,
+     tip:"Schlechtester Wert aller 11 Anbieter im Hausrat-Vergleich 2026. Mobiliar 5.5."},
+    {label:"NPS-Rückstand zu Mobiliar", val:"+8", unit:"vs +45", note:"~37 Punkte Rückstand · unter Schnitt (~+18)", tag:'<span class="tag dated">Stand 2017–19</span>', warn:true,
+     tip:"Bain/HZ Insurance. Aktualität niedrig — als Datenstand 2017–2019 gekennzeichnet. Richtung (Mobiliar führt) in neueren Berichten bestätigt."},
+    {label:"checkall Preis-Leistung", val:"4.0", unit:"/5", note:"schwächste Dimension · deckt sich mit bonus.ch", tag:'<span class="tag repr">repräsentativ</span>', warn:true,
+     tip:"Schwächste der vier checkall-Dimensionen (Info 4.3 · Service 4.1 · Preis-Leistung 4.0 · Kontaktbequemlichkeit 4.3)."}
+  ];
+  $('#kpi-grid').innerHTML = tiles.map(t=>`
+    <div class="kpi ${t.warn?'warn':''} tt" data-tip="${esc(t.tip)}">
+      <div class="label">${esc(t.label)}</div>
+      <div class="val">${esc(t.val)}${t.unit?` <small>${esc(t.unit)}</small>`:''}</div>
+      <div>${t.tag}</div>
+      <div class="note">${esc(t.note)}</div>
+    </div>`).join('');
+})();
+
+/* ===================== 3 BENCHMARK ===================== */
+(function(){
+  const b = DATA.benchmark_zufriedenheit;
+  function barsZ(arr,key,max,min,label){
+    // Zufriedenheits-Balken (Skala min..max), Anteil ab min
+    return arr.map(o=>{
+      const v = o[key];
+      const pct = ((v-min)/(max-min))*100;
+      const isA = o.anbieter==="Allianz";
+      const sg = o.siegel?`<span class="siegel">${esc(o.siegel)}</span>`:'';
+      return `<div class="bar-row ${isA?'is-allianz':''}">
+        <span class="name">${esc(o.anbieter)}</span>
+        <span class="bar-track"><span class="bar-fill" style="width:${pct.toFixed(1)}%">${v.toFixed(1)}${sg}</span></span>
+      </div>`;
+    }).join('');
+  }
+  function barsNPS(arr){
+    // NPS -100..100, hier 0..50 Bereich genutzt
+    const maxN = 50;
+    return arr.map(o=>{
+      const pct = (o.nps/maxN)*100;
+      const isA = o.anbieter==="Allianz";
+      return `<div class="bar-row ${isA?'is-allianz':''}">
+        <span class="name">${esc(o.anbieter)}</span>
+        <span class="bar-track"><span class="bar-fill neg" style="width:${pct.toFixed(1)}%">+${o.nps}</span></span>
+      </div>`;
+    }).join('');
+  }
+  function barsPct(arr){
+    return arr.map(o=>{
+      const isA = o.anbieter==="Allianz";
+      return `<div class="bar-row ${isA?'is-allianz':''}">
+        <span class="name">${esc(o.anbieter)}</span>
+        <span class="bar-track"><span class="bar-fill" style="width:${o.wert}%">${o.wert}%</span></span>
+      </div>`;
+    }).join('');
+  }
+  $('#bench-grid').innerHTML = `
+    <div class="bench-block">
+      <h3>Auto-Zufriedenheit — comparis 2025</h3>
+      <p class="scale">Skala 1–6 · Innofact, ~4'500 Befragte · Balken ab 5.0</p>
+      ${barsZ(b.auto_comparis_2025,'note',5.6,5.0)}
+    </div>
+    <div class="bench-block">
+      <h3>Hausrat-Zufriedenheit — bonus.ch 2026</h3>
+      <p class="scale">Skala 1–6 · Allianz = letzter Platz (11/11) · Balken ab 5.0</p>
+      ${barsZ(b.hausrat_bonus_2026,'note',5.6,5.0)}
+    </div>
+    <div class="bench-block">
+      <h3>Net Promoter Score — Bain (Stand 2017–2019)</h3>
+      <p class="scale">Skala −100…+100 · ~37 Pkt. Rückstand auf Mobiliar · Branchenschnitt ~+18</p>
+      ${barsNPS(b.nps_bain_2019)}
+    </div>
+    <div class="bench-block">
+      <h3>Weiterempfehlung — bonus.ch 2026</h3>
+      <p class="scale">Anteil Weiterempfehlung in % · niedrigste Rate im Vergleich</p>
+      ${barsPct(b.weiterempfehlung_bonus_2026)}
+    </div>`;
+})();
+
+/* ===================== 4 JOURNEY HEATMAP ===================== */
+(function(){
+  // Schwere je Phase aus negativen Pain Points (Frequenz×Impact, max im Datensatz = 25)
+  const byPhase = {};
+  DATA.pain_points.forEach(p=>{
+    if(p.sentiment==='negativ'){
+      const sc = p.frequenz*p.impact;
+      if(!byPhase[p.phase] || sc>byPhase[p.phase].score){
+        byPhase[p.phase] = {score:sc, pp:p};
+      }
+    }
+  });
+  function color(score){
+    // 0 -> grün, 25 -> rot
+    if(score===0) return null;
+    if(score<=6) return 'var(--gruen)';
+    if(score<=10) return 'var(--gelbgruen)';
+    if(score<=14) return 'var(--gelb)';
+    if(score<=18) return 'var(--orange)';
+    return 'var(--rot)';
+  }
+  $('#heat').innerHTML = DATA.journey_phasen.map(ph=>{
+    const e = byPhase[ph.phase];
+    const c = e?color(e.score):null;
+    if(!c){
+      return `<div class="heat-cell no-pp">
+        ${ph.moment?'<span class="mot">MOMENT OF TRUTH</span>':''}
+        <div class="ph">${esc(ph.phase)}</div>
+        <div class="score" style="color:#46505f">—</div>
+        <div class="pp">kein dokumentierter Pain Point</div>
+      </div>`;
+    }
+    const tip = `${e.pp.id} · Frequenz ${e.pp.frequenz} × Impact ${e.pp.impact} = ${e.score}. ${e.pp.in_beiden_ebenen?'In BEIDEN Ebenen belegt.':'Nur in Beschwerdekanal belegt.'}`;
+    return `<div class="heat-cell tt" style="background:${c}" data-tip="${esc(tip)}">
+      ${ph.moment?'<span class="mot">MOMENT OF TRUTH</span>':''}
+      <div class="ph">${esc(ph.phase)}</div>
+      <div class="score">${e.score}</div>
+      <div class="pp">${esc(e.pp.id)} · ${esc(e.pp.titel.split(':')[0])}</div>
+    </div>`;
+  }).join('');
+})();
+
+/* ===================== 5 PAIN-POINT MATRIX ===================== */
+(function(){
+  const svg = $('#matrix-svg');
+  const W=560,H=440, padL=64,padR=24,padT=24,padB=56;
+  const x0=padL, x1=W-padR, y0=H-padB, y1=padT;
+  const sx=(f)=> x0 + ((f-0)/6)*(x1-x0);   // Frequenz 0..6
+  const sy=(i)=> y0 - ((i-0)/6)*(y0-y1);   // Impact 0..6
+  let s='';
+  // Quadranten-Hintergrund (Quick Win = unten/links niedriger Aufwand-Hinweis dezent), wir markieren oben-rechts als belastbar
+  s+=`<rect x="${x0}" y="${y1}" width="${x1-x0}" height="${y0-y1}" fill="#f8fafd" stroke="#e2e8f0"/>`;
+  // Mittellinien
+  const mx=sx(3.5), my=sy(3.5);
+  s+=`<line x1="${mx}" y1="${y1}" x2="${mx}" y2="${y0}" stroke="#dde4ee" stroke-dasharray="4 4"/>`;
+  s+=`<line x1="${x0}" y1="${my}" x2="${x1}" y2="${my}" stroke="#dde4ee" stroke-dasharray="4 4"/>`;
+  // Quadranten-Labels
+  s+=`<text x="${x1-6}" y="${y1+16}" text-anchor="end" font-size="10" font-weight="700" fill="#003781" opacity=".55">PRIORITÄT — handeln</text>`;
+  s+=`<text x="${x0+6}" y="${y0-8}" font-size="10" font-weight="700" fill="#8a93a3">beobachten</text>`;
+  // Achsen
+  s+=`<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}" stroke="#9aa6b6" stroke-width="1.5"/>`;
+  s+=`<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#9aa6b6" stroke-width="1.5"/>`;
+  // Achsen-Ticks
+  for(let i=1;i<=5;i++){
+    s+=`<text x="${sx(i)}" y="${y0+18}" text-anchor="middle" font-size="10" fill="#8a93a3">${i}</text>`;
+    s+=`<text x="${x0-10}" y="${sy(i)+4}" text-anchor="end" font-size="10" fill="#8a93a3">${i}</text>`;
+  }
+  // Achsen-Titel
+  s+=`<text x="${(x0+x1)/2}" y="${H-14}" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1A2E">Frequenz (wie oft genannt) →</text>`;
+  s+=`<text x="18" y="${(y0+y1)/2}" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1A2E" transform="rotate(-90 18 ${(y0+y1)/2})">Impact (Schwere) →</text>`;
+
+  // Bubbles
+  const pal = {positiv:'#1f9d6b'};
+  DATA.pain_points.forEach(p=>{
+    const cx=sx(p.frequenz), cy=sy(p.impact);
+    const r = 12 + (p.prioritaet/25)*12; // Bubble-Grösse nach Score
+    const isPos = p.sentiment==='positiv';
+    let fill;
+    if(isPos){ fill='#1f9d6b'; }
+    else if(p.prioritaet>=20) fill='#d64045';
+    else if(p.prioritaet>=14) fill='#ed8b00';
+    else fill='#006AB3';
+    const stroke = p.in_beiden_ebenen ? '#003781' : '#ffffff';
+    const sw = p.in_beiden_ebenen ? 3 : 1.5;
+    s+=`<g class="tt" data-tip="${esc(p.id+' · Score '+p.prioritaet+' (Freq '+p.frequenz+'×Impact '+p.impact+') · Aufwand '+p.aufwand+' · '+p.typ)}">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" fill-opacity="0.82" stroke="${stroke}" stroke-width="${sw}"/>
+      <text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">${esc(p.id)}</text>
+    </g>`;
+  });
+  svg.innerHTML = s;
+
+  // Liste rechts (nach Priorität sortiert)
+  const order = [...DATA.pain_points].sort((a,b)=>b.prioritaet-a.prioritaet);
+  function chipFor(p){
+    const t=p.typ.toLowerCase();
+    if(p.sentiment==='positiv') return `<span class="chip qw">Stärke ausbauen</span>`;
+    let c='';
+    if(t.includes('quick')) c+=`<span class="chip qw">Quick Win</span>`;
+    if(t.includes('strategisch')) c+=`<span class="chip strat">Strategisch</span>`;
+    if(!c) c=`<span class="chip both">${esc(p.typ)}</span>`;
+    return c;
+  }
+  $('#pp-list').innerHTML = order.map(p=>`
+    <div class="pp-item ${p.sentiment==='positiv'?'pos':''}">
+      <span class="pid">${esc(p.id)}</span>
+      <div>
+        <div class="ti">${esc(p.titel)}</div>
+        <div class="mta">Score ${p.prioritaet} (Freq ${p.frequenz}×Impact ${p.impact}) · ${esc(p.phase)}${p.in_beiden_ebenen?' · <b style="color:var(--blau)">beide Ebenen</b>':''}</div>
+        <div style="margin-top:5px">${chipFor(p)}</div>
+      </div>
+    </div>`).join('');
+})();
+
+/* ===================== 6 PERCEPTION GAP ===================== */
+(function(){
+  function ampelClass(g){ return g==='gross'?'gross':'mittelgross'; }
+  function ampelLabel(g){ return g==='gross'?'Gap gross':'Gap mittel-gross'; }
+  $('#gap-grid').innerHTML = DATA.perception_gap.map(g=>`
+    <div class="gap-card">
+      <div class="gc-head">
+        <h4>${esc(g.thema)}</h4>
+        <span class="ampel ${ampelClass(g.gap)}"><span class="dot"></span>${ampelLabel(g.gap)}</span>
+      </div>
+      <div class="gc-body">
+        <div class="vr-row ver">
+          <span class="ic">✓</span>
+          <div class="tx"><span class="lab">Versprechen</span>${esc(g.versprechen)}<div class="q">Quelle: ${esc(g.versprechen_quelle)}</div></div>
+        </div>
+        <div class="vr-row real">
+          <span class="ic">!</span>
+          <div class="tx"><span class="lab">Realität (Wahrnehmung)</span>${esc(g.realitaet)}<div class="q">Quelle: ${esc(g.realitaet_quelle)}</div></div>
+        </div>
+      </div>
+    </div>`).join('');
+})();
+
+/* ===================== 7 HANDLUNGSEMPFEHLUNGEN ===================== */
+(function(){
+  function typBadges(t){
+    const low=t.toLowerCase();let b='';
+    if(low.includes('quick')) b+=`<span class="chip qw">Quick Win</span>`;
+    if(low.includes('strategisch')) b+=`<span class="chip strat">Strategisch</span>`;
+    if(!b) b=`<span class="chip both">${esc(t)}</span>`;
+    return b;
+  }
+  function impDot(i){
+    const low=i.toLowerCase();
+    if(low.includes('hoch')) return `<span class="impact-dot imp-hoch"></span>`;
+    return `<span class="impact-dot imp-mittel"></span>`;
+  }
+  $('#m-grid').innerHTML = DATA.handlungsempfehlungen.map(m=>`
+    <div class="m-card">
+      <div class="m-top">
+        <span class="m-id">${esc(m.id)} → adressiert ${esc(m.pain_point)}</span>
+        <h4>${esc(m.titel)}</h4>
+        <div class="m-badges">${typBadges(m.typ)}</div>
+      </div>
+      <div class="m-body"><p>${esc(m.beschreibung)}</p></div>
+      <div class="m-meta">
+        <div><span class="mk">Erw. Impact</span><br>${impDot(m.erwarteter_impact)}<b>${esc(m.erwarteter_impact)}</b></div>
+        <div><span class="mk">Aufwand</span><br><b>${esc(m.aufwand)}</b></div>
+        <div><span class="mk">Horizont</span><br><b>${esc(m.horizont)}</b></div>
+        <div><span class="mk">Zielwert</span><br><b style="font-weight:600">${esc(m.zielwert)}</b></div>
+      </div>
+      <div class="kpi-tags">
+        <div class="kt-lab">Erfolgs-KPIs</div>
+        ${m.kpi.map(k=>`<span class="kt">${esc(k)}</span>`).join('')}
+      </div>
+    </div>`).join('');
+})();
+
+/* ===================== 8 WIRKUNGSMESSUNG ===================== */
+(function(){
+  const w = DATA.wirkungsmessung;
+  // Metrik-Pills
+  let pills = `<div class="metric-pill">
+      <div class="mp-top"><span class="mp-tag dach">NPS</span><span style="font-weight:700;font-size:.84rem">Dachmetrik (relational)</span></div>
+      <div class="mp-def">${esc(w.dachmetrik)}</div>
+    </div>`;
+  pills += w.touchpoint_metriken.map(m=>`
+    <div class="metric-pill">
+      <div class="mp-top"><span class="mp-tag">${esc(m.metrik)}</span><span style="font-weight:700;font-size:.84rem">Touchpoint (transaktional)</span></div>
+      <div class="mp-def">${esc(m.definition)}</div>
+      <div class="mp-ph"><b>Phasen:</b> ${m.phasen.map(esc).join(' · ')}</div>
+    </div>`).join('');
+  $('#metric-pills').innerHTML = pills;
+
+  // Closed Loop
+  $('#loop-box').innerHTML = `
+    <div class="loop inner"><h5>Inner Loop</h5>${esc(w.closed_loop.inner_loop)}</div>
+    <div class="loop outer"><h5>Outer Loop</h5>${esc(w.closed_loop.outer_loop)}</div>`;
+
+  $('#prio-method').textContent = w.priorisierungsmethode;
+
+  // Wirkungslogik
+  $('#wm-flow').innerHTML = w.wirkungslogik.map((step,i)=>{
+    const txt = step.replace(/^\d+\.\s*/,'');
+    return `<div class="wm-step"><div class="n">Schritt ${i+1}</div><div class="t">${esc(txt)}</div></div>`;
+  }).join('');
+})();
+
+/* ===================== 9 FOOTER: QUELLEN, KONFIDENZ, LÜCKEN ===================== */
+(function(){
+  function konfTag(k){
+    const low=k.toLowerCase();
+    if(low.startsWith('hoch')) return `<span class="konf h">Konfidenz hoch</span>`;
+    if(low.startsWith('mittel')) return `<span class="konf m">Konfidenz mittel</span>`;
+    if(low.startsWith('niedrig')) return `<span class="konf n">Konfidenz niedrig</span>`;
+    return `<span class="konf m">Konfidenz gemischt</span>`;
+  }
+  $('#src-list').innerHTML = DATA.kennzahlen.map(k=>`
+    <li><strong style="color:#eaf0fa">${esc(k.quelle)}</strong> (${esc(k.jahr)}) ${konfTag(k.konfidenz)}<br>
+    <span style="opacity:.85">${esc(k.metrik)}: ${esc(k.wert)}</span></li>`).join('');
+
+  $('#gap-list').innerHTML = DATA.datenluecken.map(g=>`<li>${esc(g)}</li>`).join('');
+
+  $('#disclaimer').innerHTML = `
+    <strong style="color:#fff">Methoden- &amp; Ebenen-Hinweis:</strong> ${esc(DATA.meta.wichtigster_methodenhinweis)}
+    <br><br>
+    <strong style="color:#fff">Disclaimer:</strong> Eigenständiges Bewerbungsprojekt für die Rolle „Customer Experience Perception Manager“. Basiert ausschliesslich auf öffentlich zugänglichen Daten — keine internen Allianz-Daten. Konstruktiv gemeint; keine offizielle Aussage der Allianz Suisse. ${esc(DATA.meta.datenart)}`;
+})();
+</script>
+</body>
+</html>

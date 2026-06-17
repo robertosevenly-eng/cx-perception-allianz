@@ -1,0 +1,8 @@
+id,titel,phase,frequenz,impact,aufwand,score,klassifikation,typ,sentiment,in_beiden_ebenen,verletztes_versprechen
+P1,"Schadenfall: Verzögerung, fragwürdige Ablehnungen, verspätete Auszahlung",Schadenfall,5,5,4,25,Strategisch,Strategisch + Prozess,negativ,True,‚Im Schadenfall für Sie da. 7 Tage. 24 Stunden.‘ / ‚Ihr Sicherheitsnetz‘
+P2,"Erreichbarkeit & Reaktionszeit: Hotline, E-Mail, Rückrufe",Laufender Service/Vertragsänderung,5,4,3,20,Quick Win,Quick-Win-Potenzial,negativ,True,‚zuverlässige Partnerin‘ / ‚Sicherheitsnetz‘
+P3,Preis-Leistung & Prämienerhöhungen: als unverhältnismässig empfunden,Prämien/Rechnung,4,4,2,16,Quick Win,Quick Win (Kommunikation),negativ,True,‚echte Mehrwerte für unsere Kundinnen und Kunden‘
+P4,"Digitale Einfachheit: keine dedizierte CH-App, schwaches Self-Service-Portal",Digital/App,3,4,5,12,Strategisch,Strategisch,negativ,True,‚einfache Lösungen‘ / Konzern-Strategie ‚Simplicity wins‘
+P5,Beratung/Offerte: Überversprechen & Verkaufsdruck beim Abschluss,Offerte/Beratung,3,3,3,9,Quick Win,Mittel,negativ,False,"‚bedarfsgerechte, ehrliche Beratung‘ / Vertrauen"
+P6,"Vertragsausstieg & Retention: Kündigungen ignoriert, Nachforderungen, Inkasso ohne Vorkontakt",Verlängerung/Kündigung,3,3,2,9,Quick Win,Quick Win (Prozess),negativ,False,‚zuverlässige Partnerin‘
+POS1,Positiver Gegenpol: kompetente persönliche Beratung & einzelne reibungslose Schadenfälle,Offerte/Beratung,2,3,1,6,Quick Win,Stärke ausbauen,positiv,True,—
